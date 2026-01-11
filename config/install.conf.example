@@ -1,0 +1,298 @@
+# =============================================================================
+# NetBox Offline Installer Configuration File
+# =============================================================================
+# This file configures silent/non-interactive installation mode.
+# For interactive mode, simply run the installer without -c flag.
+#
+# Special Tokens:
+#   <generate> - Automatically generate value (passwords, keys)
+#   <prompt>   - Prompt user at runtime (never stores plaintext passwords)
+#
+# Security Note:
+#   NEVER store passwords in plaintext in this file. Always use <generate>
+#   or <prompt> tokens for any password fields.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Installation Settings
+# -----------------------------------------------------------------------------
+
+# INSTALL_PATH - Directory where NetBox will be installed
+# Default: /opt/netbox
+# Alternatives: /apps/netbox or any custom path
+# Note: User will own this directory (created if doesn't exist)
+INSTALL_PATH="/opt/netbox"
+
+# NETBOX_VERSION - Version being installed (auto-detected from package)
+# This is informational and set by the installer
+NETBOX_VERSION="4.4.9"
+
+# -----------------------------------------------------------------------------
+# Database Settings
+# -----------------------------------------------------------------------------
+
+# DB_MODE - Database installation mode
+# Values:
+#   local  - Install and configure PostgreSQL locally (default)
+#   remote - Connect to existing PostgreSQL server on another host
+DB_MODE="local"
+
+# DB_HOST - PostgreSQL server hostname or IP address
+# For local mode: Use "localhost"
+# For remote mode: Specify remote server IP or FQDN
+DB_HOST="localhost"
+
+# DB_PORT - PostgreSQL server port
+# Default: 5432 (standard PostgreSQL port)
+DB_PORT="5432"
+
+# DB_NAME - Database name for NetBox
+# Default: netbox
+# Note: Will be created if doesn't exist (local or remote with admin creds)
+DB_NAME="netbox"
+
+# DB_USER - Database username for NetBox application
+# Default: netbox
+# Note: Will be created if doesn't exist (local or remote with admin creds)
+DB_USER="netbox"
+
+# DB_PASSWORD - Password for NetBox database user
+# SECURITY: Use <generate> to auto-generate strong password
+# Alternative: Use <prompt> to enter password at runtime
+# NEVER store plaintext password here
+DB_PASSWORD="<generate>"
+
+# DB_ADMIN_USER - PostgreSQL admin username (remote mode only)
+# Used to create database and user on remote server
+# Leave empty if database/user already exist
+# Example: postgres
+DB_ADMIN_USER=""
+
+# DB_ADMIN_PASSWORD - PostgreSQL admin password (remote mode only)
+# SECURITY: MUST use <prompt> token (prompts at runtime)
+# NEVER store plaintext password here
+# Only needed if DB_ADMIN_USER is set
+DB_ADMIN_PASSWORD="<prompt>"
+
+# -----------------------------------------------------------------------------
+# Redis Settings
+# -----------------------------------------------------------------------------
+
+# REDIS_HOST - Redis server hostname or IP address
+# Default: localhost (assumes local Redis installation)
+# For remote Redis: Specify server IP or FQDN
+REDIS_HOST="localhost"
+
+# REDIS_PORT - Redis server port
+# Default: 6379 (standard Redis port)
+REDIS_PORT="6379"
+
+# REDIS_DATABASE - Redis database number for task queue
+# Default: 0
+# Note: Must be different from REDIS_CACHE_DATABASE
+REDIS_DATABASE="0"
+
+# REDIS_CACHE_DATABASE - Redis database number for caching
+# Default: 1
+# Note: Must be different from REDIS_DATABASE
+REDIS_CACHE_DATABASE="1"
+
+# -----------------------------------------------------------------------------
+# NetBox Application Settings
+# -----------------------------------------------------------------------------
+
+# ALLOWED_HOSTS - Space-separated list of FQDNs/IPs allowed to access NetBox
+# Examples:
+#   "netbox.example.com 192.168.1.100 localhost"
+#   "*" (wildcard - allows all, not recommended for production)
+# Note: Must include all hostnames/IPs users will use to access NetBox
+ALLOWED_HOSTS="netbox.example.com 192.168.1.100"
+
+# SECRET_KEY - Django secret key for cryptographic signing
+# SECURITY: Use <generate> to create cryptographically secure key
+# NEVER use a weak or publicly known value
+# NEVER commit to version control
+SECRET_KEY="<generate>"
+
+# -----------------------------------------------------------------------------
+# Superuser Settings
+# -----------------------------------------------------------------------------
+
+# CREATE_SUPERUSER - Create initial Django superuser account
+# Values: yes, no
+# Recommended: yes (required for initial login to web interface)
+CREATE_SUPERUSER="yes"
+
+# SUPERUSER_USERNAME - Username for initial superuser account
+# Default: admin
+# Note: Used to log into NetBox web interface
+SUPERUSER_USERNAME="admin"
+
+# SUPERUSER_EMAIL - Email address for superuser account
+# Used for password resets and notifications
+SUPERUSER_EMAIL="admin@example.com"
+
+# SUPERUSER_PASSWORD - Password for superuser account
+# SECURITY: Use <prompt> to enter password at runtime
+# Alternative: Use <generate> to auto-generate (will be displayed once)
+# NEVER store plaintext password here
+SUPERUSER_PASSWORD="<prompt>"
+
+# -----------------------------------------------------------------------------
+# Web Server Settings (Nginx)
+# -----------------------------------------------------------------------------
+
+# NGINX_SERVER_NAME - Server name for Nginx virtual host
+# Should match FQDN in ALLOWED_HOSTS
+# Example: netbox.example.com
+NGINX_SERVER_NAME="netbox.example.com"
+
+# NGINX_ENABLE_SSL - Enable HTTPS/SSL
+# Values: yes, no
+# Recommended: yes (for production environments)
+NGINX_ENABLE_SSL="yes"
+
+# NGINX_SSL_MODE - SSL certificate source
+# Values:
+#   self-signed - Auto-generate self-signed certificate (testing only)
+#   provided    - Use existing certificate files (production)
+# Note: Self-signed certificates will trigger browser warnings
+NGINX_SSL_MODE="self-signed"
+
+# NGINX_SSL_CERT_PATH - Path to SSL certificate file
+# Only required if NGINX_SSL_MODE=provided
+# Example: /etc/pki/tls/certs/netbox.crt
+# Leave empty for self-signed mode
+NGINX_SSL_CERT_PATH=""
+
+# NGINX_SSL_KEY_PATH - Path to SSL private key file
+# Only required if NGINX_SSL_MODE=provided
+# Example: /etc/pki/tls/private/netbox.key
+# Leave empty for self-signed mode
+NGINX_SSL_KEY_PATH=""
+
+# GUNICORN_BIND - Gunicorn application server bind address
+# Default: 127.0.0.1:8001 (local only, Nginx proxies to this)
+# Format: IP:PORT
+# Recommended: Keep as localhost for security (only Nginx should access)
+GUNICORN_BIND="127.0.0.1:8001"
+
+# -----------------------------------------------------------------------------
+# Security Settings
+# -----------------------------------------------------------------------------
+
+# ENABLE_SELINUX - Apply SELinux file contexts and booleans
+# Values:
+#   auto - Apply if SELinux is installed (recommended)
+#   yes  - Force apply (fails if SELinux not installed)
+#   no   - Skip SELinux configuration
+# Note: Contexts applied even if SELinux is in Permissive/Disabled mode
+#       (ensures compatibility when switching to Enforcing mode later)
+ENABLE_SELINUX="auto"
+
+# ENABLE_FAPOLICYD - Configure FAPolicyD trust rules
+# Values:
+#   auto - Apply if FAPolicyD is active (recommended)
+#   yes  - Force apply (fails if FAPolicyD not running)
+#   no   - Skip FAPolicyD configuration
+ENABLE_FAPOLICYD="auto"
+
+# -----------------------------------------------------------------------------
+# Backup Settings
+# -----------------------------------------------------------------------------
+
+# BACKUP_DIR - Directory for storing installation backups
+# Default: /var/backup/netbox-offline-installer
+# Note: Separate from NetBox's own backup location to avoid confusion
+# Backups include: configuration, database dumps, media files
+BACKUP_DIR="/var/backup/netbox-offline-installer"
+
+# BACKUP_RETENTION - Number of backups to retain
+# Default: 3
+# Older backups are automatically deleted when limit exceeded
+# Set to 0 for unlimited retention (not recommended - disk space)
+BACKUP_RETENTION="3"
+
+# -----------------------------------------------------------------------------
+# VM Snapshot Settings
+# -----------------------------------------------------------------------------
+
+# VM_SNAPSHOT_ENABLED - Create VM snapshot before installation
+# Values: yes, no
+# Note: Automatically detects VMware or XCP-ng/Xen hypervisor
+# If snapshot fails, installer warns but continues (doesn't abort)
+VM_SNAPSHOT_ENABLED="yes"
+
+# XO_API_URL - Xen Orchestra REST API base URL (XCP-ng only)
+# Required for automated XCP-ng snapshots via Xen Orchestra
+# Format: https://xo.example.com (no trailing slash)
+# Leave empty if not using XCP-ng or if creating snapshots manually
+# Note: VMware snapshots require manual creation via vSphere Client
+XO_API_URL=""
+
+# XO_API_TOKEN - Xen Orchestra authentication token (XCP-ng only)
+# Required for automated XCP-ng snapshots via Xen Orchestra
+# Obtain from Xen Orchestra: Settings → Users → [Admin User] → Authentication Tokens
+# SECURITY: Token must be from an admin user account
+# Leave empty if not using XCP-ng or if creating snapshots manually
+# Example: "KQxQdm2vMiv7jBIK0hgkmgxKzemd8wSJ7ugFGKFkTbs"
+XO_API_TOKEN=""
+
+# XO_API_INSECURE_SSL - Disable SSL certificate verification (XCP-ng only)
+# Values: yes, no
+# Use "yes" for self-signed certificates or internal CA certificates
+# SECURITY WARNING: Only use "yes" in trusted internal networks
+# Recommended: Use XO_API_CA_BUNDLE instead for proper CA validation
+# Default: no (verify SSL certificates)
+XO_API_INSECURE_SSL="no"
+
+# XO_API_CA_BUNDLE - Custom CA certificate bundle path (XCP-ng only)
+# Path to CA certificate bundle file for validating Xen Orchestra SSL certificate
+# Use this for internal CA-signed certificates instead of XO_API_INSECURE_SSL
+# Leave empty to use system CA bundle or if using XO_API_INSECURE_SSL
+# Example: /etc/pki/ca-trust/source/anchors/internal-ca.crt
+XO_API_CA_BUNDLE=""
+
+# -----------------------------------------------------------------------------
+# Logging Settings
+# -----------------------------------------------------------------------------
+
+# LOG_FILE - Path to installer log file
+# Default: /var/log/netbox-offline-installer.log
+# Format: Syslog-compliant (for audit/compliance requirements)
+# Permissions: 640 (readable by root and log group)
+LOG_FILE="/var/log/netbox-offline-installer.log"
+
+# LOG_LEVEL - Logging verbosity level
+# Values: DEBUG, INFO, WARN, ERROR
+# Default: INFO
+# Recommended: INFO for normal operations, DEBUG for troubleshooting
+LOG_LEVEL="INFO"
+
+# -----------------------------------------------------------------------------
+# STIG Assessment Settings (Optional)
+# -----------------------------------------------------------------------------
+# Note: Evaluate-STIG is NOT bundled with this installer (licensing reasons)
+# User must provide Evaluate-STIG separately if STIG scanning is desired
+
+# EVALUATE_STIG_PATH - Path to evaluate-stig.sh script
+# Leave empty if Evaluate-STIG not available
+# Example: /opt/Evaluate-STIG/evaluate-stig.sh
+# If provided, installer will run STIG scans before build and after install
+EVALUATE_STIG_PATH=""
+
+# ENABLE_STIG_SCAN - Run STIG compliance scans
+# Values:
+#   auto    - Run if EVALUATE_STIG_PATH is valid (recommended)
+#   yes     - Require STIG scan (fails if Evaluate-STIG not found)
+#   no      - Skip STIG scanning
+ENABLE_STIG_SCAN="auto"
+
+# STIG_REPORT_DIR - Directory for storing STIG assessment reports
+# Default: /var/backup/netbox-offline-installer/stig-reports
+# Reports include: baseline (pre-build), compliance (post-install), comparison
+STIG_REPORT_DIR="/var/backup/netbox-offline-installer/stig-reports"
+
+# =============================================================================
+# End of Configuration
+# =============================================================================

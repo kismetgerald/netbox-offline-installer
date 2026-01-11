@@ -1,2 +1,13 @@
 # Claude Code configuration
 .claude/
+
+# Build and test artifacts
+.build_results/
+.hardening-tools/
+dist/
+
+# Development documentation (not for end users)
+CLAUDE.md
+TESTING-NOTES.md
+WIKI-STRUCTURE.md
+
